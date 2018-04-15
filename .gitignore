@@ -3,3 +3,5 @@
 /.vscode
 /data
 /test
+/coverage
+/.nyc_output
