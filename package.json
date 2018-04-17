@@ -1,14 +1,15 @@
 {
   "name": "x3-parser-csv",
   "version": "0.1.0",
-  "description": "",
+  "description": "A really fast streaming CSV parser written in Typescript.",
+  "author": "x3@x3cion",
   "main": "dist/parser.js",
   "scripts": {
     "test": "cross-env TS_NODE_COMPILER_OPTIONS={\\\"module\\\":\\\"commonjs\\\"} nyc mocha -r ts-node/register -r source-map-support/register --recursive src/**/*.spec.ts --delay",
     "prepublishOnly": "rm -rf dist/ && tsc"
   },
-  "author": "",
-  "license": "ISC",
+  "typings": "parser.d.ts",
+  "license": "MIT",
   "devDependencies": {
     "@types/chai": "~4.1.2",
     "@types/mocha": "~5.0.0",
