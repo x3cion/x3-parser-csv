@@ -1,4 +1,5 @@
 
+
 import * as chai from "chai";
 const should = chai.should();
 
@@ -6,14 +7,19 @@ import Parser from "./parser";
 
 import { Readable, Writable } from "stream";
 
+import * as csvSpectrum from "csv-spectrum";
+import * as util from "util";
 
-describe("Parser", () => {
+(async () => {
 
-	describe("Check against csv-spectrum", () => {
+	const csvSpectrumData = await new Promise<{ name, csv, json }[]>(then => csvSpectrum((err, data) => {
+		if (err) throw err;
+		then(data);
+	}));
 
-		before((done) => {
-			const csvSpectrum = require("csv-spectrum");
-			const util = require("util");
+	describe("Parser", () => {
+
+		describe("Check against csv-spectrum", () => {
 			const parserOptions = {
 				"comma_in_quotes": {
 					colDelimiter: ",",
@@ -94,64 +100,52 @@ describe("Parser", () => {
 				}
 			};
 
-			// Build Testruns from csv-spectrum using configs above
-			csvSpectrum((err, data) => {
-				if (err) throw err;
+			for (let { name, csv, json } of csvSpectrumData) {
+				it(`should pass test ${name}`, (done) => {
+					const option = parserOptions[name];
+					const expectedResult = JSON.parse(json.toString("utf8"));
+					const parser = new Parser(option);
+					const result = [];
+					const readable = new Readable;
 
-				describe("running checks", () => {
+					const writable = new Writable({
+						objectMode: true,
+						write(data, _, next) {
+							result.push(data);
+							next();
+						}
+					});
 
-					for (let { name, csv, json } of data) {
-						it(`should pass test ${name}`, (done) => {
-							const option = parserOptions[name];
-							const expectedResult = JSON.parse(json.toString("utf8"));
-							const parser = new Parser(option);
-							const result = [];
-							const readable = new Readable;
+					writable.on("finish", () => {
+						for (let i = 0, l = result.length; i < l; i++) {
+							const parserData = result[i];
+							const keysOfParserData = Array.from(parserData.keys());
 
-							const writable = new Writable({
-								objectMode: true,
-								write(data, _, next) {
-									result.push(data);
-									next();
-								}
-							});
+							const expectedData = expectedResult[i];
+							const keysOfExpectedData = Object.keys(expectedData);
 
-							writable.on("finish", () => {
-								for (let i = 0, l = result.length; i < l; i++) {
-									const parserData = result[i];
-									const keysOfParserData = Array.from(parserData.keys());
+							keysOfParserData.length.should.equal(keysOfExpectedData.length);
 
-									const expectedData = expectedResult[i];
-									const keysOfExpectedData = Object.keys(expectedData);
+							for (let i = 0, l = keysOfParserData.length; i < l; i++) {
+								keysOfParserData[i].should.equal(keysOfExpectedData[i]);
+							}
 
-									keysOfParserData.length.should.equal(keysOfExpectedData.length);
+							for (let [key, value] of parserData) {
+								value.should.equal(expectedData[key]);
+							}
+						}
+						done();
+					});
 
-									for (let i = 0, l = keysOfParserData.length; i < l; i++) {
-										keysOfParserData[i].should.equal(keysOfExpectedData[i]);
-									}
+					readable.pipe(parser).pipe(writable);
 
-									for (let [key, value] of parserData) {
-										value.should.equal(expectedData[key]);
-									}
-								}
-								done();
-							});
-
-
-							readable.pipe(parser).pipe(writable);
-
-							readable.push(csv);
-							readable.push(null);
-						});
-					}
+					readable.push(csv);
+					readable.push(null);
 				});
-
-				done();
-			});
-
+			}
 		});
 
-		it("noop");
-
 	});
-});
+
+	run();
+})();

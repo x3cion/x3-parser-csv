@@ -4,7 +4,7 @@
   "description": "",
   "main": "dist/parser.js",
   "scripts": {
-    "test": "cross-env TS_NODE_COMPILER_OPTIONS={\\\"module\\\":\\\"commonjs\\\"} nyc mocha -r ts-node/register -r source-map-support/register --recursive 'src/**/*.spec.ts'",
+    "test": "cross-env TS_NODE_COMPILER_OPTIONS={\\\"module\\\":\\\"commonjs\\\"} nyc mocha -r ts-node/register -r source-map-support/register --recursive src/**/*.spec.ts --delay",
     "cc": "istanbul cover "
   },
   "author": "",
