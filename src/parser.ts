@@ -1,7 +1,7 @@
 import { Readable, ReadableOptions, Transform, Writable } from "stream";
 import { StringDecoder } from "string_decoder";
 
-interface ParserOptions extends ReadableOptions {
+export interface ParserOptions extends ReadableOptions {
 	file: string;
 }
 
@@ -90,14 +90,6 @@ export default class Parser extends Transform {
 
 	addData(str: string) {
 		this.currentData += str;
-	}
-
-	handleRowDelimiter({ str, i, last }): boolean {
-		if (this.inColEscape || str.startsWith(this.rowDelimiter, i)) {
-			return false;
-		}
-
-		return true;
 	}
 
 	/**
