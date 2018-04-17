@@ -2,7 +2,10 @@ import { Readable, ReadableOptions, Transform, Writable } from "stream";
 import { StringDecoder } from "string_decoder";
 
 export interface ParserOptions extends ReadableOptions {
-	file: string;
+	colDelimiter: string;
+	colEscape?: string;
+	rowDelimiter: string;
+	escapeChar?: string;
 }
 
 export default class Parser extends Transform {
@@ -16,7 +19,7 @@ export default class Parser extends Transform {
 
 	private header = true;
 
-	constructor(opts?: ParserOptions) {
+	constructor(opts?: any) {
 		super(Object.assign(opts || {}, { readableObjectMode: true }));
 
 		if (opts) Object.assign(this, opts);
