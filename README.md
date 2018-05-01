@@ -63,4 +63,4 @@ readable.push(null);
 ```
 
 # Known Bugs
-- I'm not yet sure if header: false works
+- ~~I'm not yet sure if header: false works~~ e5241520977225aa984175215d070e5c23601464

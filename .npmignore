@@ -1,5 +1,8 @@
 .idea/
+.nyc_output/
 .vscode/
+coverage/
 src/
-test/
+tsconfig.json
+test.ts
 tsconfig.json
