@@ -145,7 +145,47 @@ import * as util from "util";
 			}
 		});
 
+		it("should work in headless mode", () => {
+			const data = "house,garden,tree\nwall,fence,bark";
+			const expectedResult = [["house", "garden", "tree"], ["wall", "fence", "bark"]];
+			const result = [];
+			const writable = new Writable({
+				objectMode: true,
+				write(data, _, next) {
+					result.push(data);
+					next();
+				}
+			});
+
+			const parser = new Parser({
+				colDelimiter: ",",
+				colEscape: null,
+				rowDelimiter: "\n",
+				header: false
+			});
+
+			writable.on("finish", () => {
+				result.length.should.equal(expectedResult.length);
+				for (let i = 0, l = result.length; i < l; i++) {
+					let row = result[i];
+					let expectedRow = expectedResult[i];
+
+					row.length.should.equal(expectedRow.length);
+
+					for (let i = 0, l = row.length; i < l; i++) {
+						should.equal(row[i], expectedRow[i]);
+					}
+				}
+			});
+
+			parser.pipe(writable);
+
+			parser.end(Buffer.from(data));
+
+		})
 	});
+
+
 
 	run();
 })();

@@ -2,10 +2,11 @@ import { Readable, ReadableOptions, Transform, Writable } from "stream";
 import { StringDecoder } from "string_decoder";
 
 export interface ParserOptions extends ReadableOptions {
-	colDelimiter: string;
+	colDelimiter?: string;
 	colEscape?: string;
 	rowDelimiter: string;
 	escapeChar?: string;
+	header?: boolean;
 }
 
 export default class Parser extends Transform {
@@ -19,13 +20,17 @@ export default class Parser extends Transform {
 
 	private header = true;
 
-	constructor(opts?: any) {
+	constructor(opts?: ParserOptions) {
 		super(Object.assign(opts || {}, { readableObjectMode: true }));
 
 		if (opts) Object.assign(this, opts);
 
-		if (this.header)
-			this.headers = [];
+		if (this.header) {
+			this.inHeaders = true;
+			this.currentDataMap = new Map();
+		} else {
+			this.currentDataMap = [];
+		}
 	}
 
 	_transform(buff: Buffer, encoding: string, next: Function) {
@@ -48,7 +53,8 @@ export default class Parser extends Transform {
 		done();
 	}
 
-	private headers: string[];
+	private headers: string[] = [];
+	private inHeaders = false;
 
 	private inColEscape = false;
 	private nextEscaped = false;
@@ -56,7 +62,7 @@ export default class Parser extends Transform {
 	private currentData = "";
 	private tanglingData = null;
 	private currentColumn = 0;
-	private currentDataMap = new Map();
+	private currentDataMap: Map<string, string> | string[];
 
 	getHeaders(): string[] {
 		return this.headers;
@@ -70,11 +76,13 @@ export default class Parser extends Transform {
 	finalizeCurrentFieldData(additionalString?: string): void {
 		additionalString && this.addData(additionalString);
 		if (this.tanglingData) this.currentData = this.tanglingData + this.currentData;
-		if (this.header)
+		if (this.inHeaders)
 			this.headers.push(this.currentData);
-		else
-			this.currentDataMap.set(this.headers[this.currentColumn++], this.currentData);
-
+		else if (this.header) {
+			(<Map<string, string>>this.currentDataMap).set(this.headers[this.currentColumn++], this.currentData);
+		} else {
+			(<string[]>this.currentDataMap).push(this.currentData);
+		}
 		this.currentData = "";
 	}
 
@@ -106,13 +114,13 @@ export default class Parser extends Transform {
 		for (let i = 0, l = str.length; i < l; i++) {
 			if (!this.inColEscape && str.startsWith(this.rowDelimiter, i)) {
 				this.finalizeCurrentFieldData(str.slice(last + 1, i));
-				if (!this.header) {
-					this.currentColumn !== this.headers.length && console.log("warning, got row delimiter, but column count not reached!", this.currentDataMap);
+				if (!this.inHeaders) {
+					this.currentColumn !== this.headers.length && console.warn("warning, got row delimiter, but column count not reached!", this.currentDataMap);
 					this.currentColumn = 0;
 					this.push(this.currentDataMap);
-					this.currentDataMap = new Map();
+					this.currentDataMap = this.header ? new Map() : [];
 				} else
-					this.header = false;
+					this.inHeaders = false;
 				last = i + this.rowDelimiter.length - 1;
 			} else if (!this.inColEscape && str[i] === this.colDelimiter) {
 				this.finalizeCurrentFieldData(str.slice(last + 1, i));
