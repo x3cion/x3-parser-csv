@@ -12,7 +12,7 @@
     "test": "cross-env TS_NODE_COMPILER_OPTIONS={\\\"module\\\":\\\"commonjs\\\"} nyc mocha -r ts-node/register -r source-map-support/register --recursive src/**/*.spec.ts --delay",
     "prepublishOnly": "rm -rf dist/ && tsc"
   },
-  "typings": "parser.d.ts",
+  "typings": "dist/parser.d.ts",
   "license": "MIT",
   "devDependencies": {
     "@types/chai": "~4.1.2",
