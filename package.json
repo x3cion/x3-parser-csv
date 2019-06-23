@@ -1,6 +1,6 @@
 {
   "name": "x3-parser-csv",
-  "version": "0.1.2",
+  "version": "0.1.4",
   "description": "A really fast streaming CSV parser written in Typescript.",
   "repository": {
     "type": "git",
@@ -21,12 +21,11 @@
     "chai": "~4.1.2",
     "cross-env": "~5.1.4",
     "csv-spectrum": "~1.0.0",
-    "istanbul": "~0.4.5",
     "mocha": "~5.1.0",
-    "nyc": "~11.6.0",
+    "nyc": "14.1.1",
     "source-map-support": "~0.5.4",
     "ts-node": "~6.0.0",
-    "tslint": "~5.9.1",
+    "tslint": "5.18.0",
     "typescript": "~2.8.1"
   },
   "nyc": {
