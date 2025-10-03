@@ -1,0 +1,10 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "verbatimModuleSyntax": false
+  },
+  "include": ["src/**/*", "types/**/*.d.ts"],
+  "exclude": []
+}
