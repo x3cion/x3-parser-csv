@@ -17,10 +17,10 @@ Available Options:
 {
 	// Separates columns
 	colDelimiter: string,
-	// Surrounds column content
-	colEscape: string,
-	// Escapes chars within column content
-	escapeChar: string,
+	// Surrounds column content (set to null to disable escaping)
+	colEscape: string | null,
+	// Escapes chars within column content (set to null to disable)
+	escapeChar: string | null,
 	// Separates rows
 	rowDelimiter: string,
 	// Enables or disables headers
