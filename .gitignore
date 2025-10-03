@@ -7,3 +7,5 @@
 /.nyc_output
 /dist
 test.ts
+.eslintcache
+.c8_output

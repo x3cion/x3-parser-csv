@@ -1,0 +1,6 @@
+{
+  "exclude": ["**/*.spec.ts", "types/**"],
+  "reporter": ["text", "lcov", "html"],
+  "all": true,
+  "src": ["src"]
+}
