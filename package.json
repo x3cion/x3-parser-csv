@@ -1,6 +1,6 @@
 {
   "name": "x3-parser-csv",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A really fast streaming CSV parser written in Typescript.",
   "repository": {
     "type": "git",
